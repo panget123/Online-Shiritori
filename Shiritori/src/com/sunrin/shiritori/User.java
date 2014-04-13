@@ -7,6 +7,7 @@ import android.widget.TextView;
 public class User {
 	private TextView name;
 	private ImageView profile;
+	private String id;
 	public User(View v, int name_id, int profile_id) {
 		name = (TextView)v.findViewById(name_id);
 		profile = (ImageView)v.findViewById(profile_id);
@@ -22,5 +23,11 @@ public class User {
 	}
 	public void setProfile(ImageView profile) {
 		this.profile = profile;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 }

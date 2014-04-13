@@ -46,7 +46,9 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 	String mMyName = null;
 	Util util = Util.getInstace();
 
-	Fragment frag_main, frag_splash, frag_game;
+	MainFragment frag_main;
+	SplashFragment frag_splash; 
+	GameFragment frag_game;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +100,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		if(Message.length() < 0)
 			return;
 
-		((GameFragment)frag_game).et_message.setText("");
+		frag_game.et_message.setText("");
 		Message = mMyName + " : " + Message;
 		// Send to every other participant.
 		for (Participant p : mParticipants) {
@@ -107,11 +109,11 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 			if (p.getStatus() != Participant.STATUS_JOINED)
 				continue;
 
-			Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), Message.getBytes(), mRoomId,
+			Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), ('M' + Message).getBytes(), mRoomId,
 					p.getParticipantId());
 		}
 
-		((GameFragment)frag_game).changeList(Message);
+		frag_game.changeList(Message);
 	}
 
 	void sendData(String data) {
@@ -128,13 +130,23 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 
 	@Override
 	public void onRealTimeMessageReceived(RealTimeMessage rtm) {
-		String Message = new String(rtm.getMessageData());
+		String Message = new String(rtm.getMessageData()).substring(1);
+		byte flag = rtm.getMessageData()[0];
 		Log.e(TAG, Message);
-		((GameFragment)frag_game).changeList(Message);
+		
+		if(flag == 'N') {
+			for(int i=0; i<frag_game.user.length; i++) {
+				if(frag_game.user[i].getId().equals(rtm.getSenderParticipantId()))
+					frag_game.user[i].getName().setText(Message);
+			}
+		}
+		
+		else {
+			frag_game.changeList(Message);
+		}
 	}
 
 	void startQuickGame() {
-		// quick-start a game with 1 randomly selected opponent
 		final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 3;
 		Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,
 				MAX_OPPONENTS, 0);
@@ -172,16 +184,42 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		if (responseCode == Activity.RESULT_OK) {
 			// ready to start playing
 			util.fragmentReplace(frag_game, this, true);
+			getSupportFragmentManager().executePendingTransactions();
+
+			for (int i=0; i<mParticipants.size(); i++) 
+				frag_game.user[i].setId(mParticipants.get(i).getParticipantId()); // Set Users ID
+			
+			
+			for (int i=0; i<mParticipants.size(); i++) { 
+				// Trade Users Name
+				if (mParticipants.get(i).getParticipantId().equals(mMyId)) {
+					frag_game.user[i].getName().setText(mMyName);
+					continue;
+				}
+				if (mParticipants.get(i).getStatus() != Participant.STATUS_JOINED)
+					continue;
+				
+				
+				Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), ('N' + mMyName).getBytes(), mRoomId,
+						mParticipants.get(i).getParticipantId());
+			}
 			Log.d(TAG, "Starting game (waiting room returned OK).");
 		} else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
 			// player indicated that they want to leave the room
 			leaveRoom();
+			Log.e(TAG, "RESULT_LEFT_ROOM");
 		} else if (responseCode == Activity.RESULT_CANCELED) {
 			// Dialog was cancelled (user pressed back key, for instance). In our game,
 			// this means leaving the room too. In more elaborate games, this could mean
 			// something else (like minimizing the waiting room UI).
-			leaveRoom();
+			Log.e(TAG, "RESULT_CANCLED");
+			if(requestCode == 1000) {
+				mRoomId = null;
+			} else {
+				leaveRoom();
+			}
 		}
+		
 	}
 
 	@Override
