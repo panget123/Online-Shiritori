@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ public class GameFragment extends Fragment{
 	ArrayAdapter<String> adapter;
 	ListView listview;
 	EditText et_message;
+	User[] user = new User[2];
 
 	public GameFragment() {}
 
@@ -25,15 +27,22 @@ public class GameFragment extends Fragment{
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.frag_game, container,
 				false);
+		Log.e("GameFrag", "OncreateView");
 		
 		list = new ArrayList<String>();
-		adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, list);
+		adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
 		listview = (ListView)rootView.findViewById(R.id.message);
 		et_message = (EditText)rootView.findViewById(R.id.et_send);
+		user[0] = new User(rootView, R.id.name1, R.id.user1);
+		user[1] = new User(rootView, R.id.name2, R.id.user2);
 		
 		listview.setAdapter(adapter);
 		
 		return rootView;
+	}
+	
+	public void setName(int index, String name) {
+		user[index].getName().setText(name);
 	}
 	
 	public void changeList(String Message) {

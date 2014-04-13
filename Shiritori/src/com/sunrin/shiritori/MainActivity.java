@@ -38,13 +38,12 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 	final String TAG = "Log";
 	String mRoomId = null;
 
-	String MyName = null;
-
 	// The participants in the currently active game
 	ArrayList<Participant> mParticipants = null;
 
 	// My participant ID in the currently active game
 	String mMyId = null;
+	String mMyName = null;
 	Util util = Util.getInstace();
 
 	Fragment frag_main, frag_splash, frag_game;
@@ -93,26 +92,38 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 			break;
 		}
 	}
-	
+
 	void sendMessage() {
 		String Message = ((GameFragment) frag_game).et_message.getText().toString();
 		if(Message.length() < 0)
 			return;
-		
-		((GameFragment)frag_game).et_message.setText("");
-		Message = MyName + " : " + Message;
-        // Send to every other participant.
-        for (Participant p : mParticipants) {
-            if (p.getParticipantId().equals(mMyId))
-                continue;
-            if (p.getStatus() != Participant.STATUS_JOINED)
-                continue;
 
-            Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), Message.getBytes(), mRoomId,
-                    p.getParticipantId());
-        }
-        
-        ((GameFragment)frag_game).changeList(Message);
+		((GameFragment)frag_game).et_message.setText("");
+		Message = mMyName + " : " + Message;
+		// Send to every other participant.
+		for (Participant p : mParticipants) {
+			if (p.getParticipantId().equals(mMyId))
+				continue;
+			if (p.getStatus() != Participant.STATUS_JOINED)
+				continue;
+
+			Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), Message.getBytes(), mRoomId,
+					p.getParticipantId());
+		}
+
+		((GameFragment)frag_game).changeList(Message);
+	}
+
+	void sendData(String data) {
+		for (Participant p : mParticipants) {
+			if (p.getParticipantId().equals(mMyId))
+				continue;
+			if (p.getStatus() != Participant.STATUS_JOINED)
+				continue;
+
+			Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), data.getBytes(), mRoomId,
+					p.getParticipantId());
+		}
 	}
 
 	@Override
@@ -160,8 +171,8 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		// we got the result from the "waiting room" UI.
 		if (responseCode == Activity.RESULT_OK) {
 			// ready to start playing
-			Log.d(TAG, "Starting game (waiting room returned OK).");
 			util.fragmentReplace(frag_game, this, true);
+			Log.d(TAG, "Starting game (waiting room returned OK).");
 		} else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
 			// player indicated that they want to leave the room
 			leaveRoom();
@@ -202,7 +213,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 	@Override
 	public void onRoomCreated(int arg0, Room room) {
 		Log.e(TAG, "onRoomCreated");
-        showWaitingRoom(room);
+		showWaitingRoom(room);
 	}
 
 	@Override
@@ -213,12 +224,12 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		mRoomId = room.getRoomId();
 		mParticipants = room.getParticipants();
 		mMyId = room.getParticipantId(Games.Players.getCurrentPlayerId(getApiClient()));
-		MyName = room.getParticipant(mMyId).getDisplayName();
+		mMyName = room.getParticipant(mMyId).getDisplayName();
 
 		// print out the list of participants (for debug purposes)
 		Log.d(TAG, "Room ID: " + mRoomId);
 		Log.d(TAG, "My ID " + mMyId);
-		Log.d(TAG, "MY NAME " + MyName);
+		Log.d(TAG, "MY NAME " + mMyName);
 		Log.d(TAG, "<< CONNECTED TO ROOM>>");
 	}
 

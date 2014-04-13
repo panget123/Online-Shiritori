@@ -4,29 +4,74 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-	<ListView
-	    android:id="@+id/message"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_above="@+id/et_send" />
+    <TextView
+        android:id="@+id/word_pan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="쿵쿵따"
+        android:textSize="30sp" />
 
-	<EditText
-	    android:id="@+id/et_send"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignTop="@+id/btn_send"
-	    android:layout_toLeftOf="@+id/btn_send"
-	    android:hint="Message" />
+    <RelativeLayout
+        android:id="@+id/rl_game_stage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/word_pan" >
 
-	<Button
-	    android:id="@+id/btn_send"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
-	    android:layout_alignParentRight="true"
-	    android:onClick="mOnClick"
-	    android:text="Send" />
-    
+        <ImageView
+            android:id="@+id/user1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/name1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user1"
+            android:text="Name" />
+
+        <ImageView
+            android:id="@+id/user2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/user1"
+            android:layout_toRightOf="@+id/user1"
+            android:background="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/name2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/user2"
+            android:layout_below="@id/user2"
+            android:text="Name" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/message"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/et_send"
+        android:layout_below="@+id/rl_game_stage" />
+
+    <EditText
+        android:id="@+id/et_send"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/btn_send"
+        android:layout_toLeftOf="@+id/btn_send"
+        android:hint="Message" />
+
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:onClick="mOnClick"
+        android:text="Send" />
+
 </RelativeLayout>
