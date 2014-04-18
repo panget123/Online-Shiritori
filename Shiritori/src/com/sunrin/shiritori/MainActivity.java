@@ -1,5 +1,8 @@
 package com.sunrin.shiritori;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,23 +17,19 @@ import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListene
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
+import Helper.HttpManager;
+import Helper.URLS;
 import Helper.Util;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.os.Build;
 
 public class MainActivity extends BaseGameActivity implements 
 RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
@@ -44,6 +43,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 	// My participant ID in the currently active game
 	String mMyId = null;
 	String mMyName = null;
+	boolean mMyTurn = false;
 	Util util = Util.getInstace();
 
 	MainFragment frag_main;
@@ -97,23 +97,17 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 
 	void sendMessage() {
 		String Message = ((GameFragment) frag_game).et_message.getText().toString();
-		if(Message.length() < 0)
+		if(Message.length() < 1)
 			return;
-
-		frag_game.et_message.setText("");
-		Message = mMyName + " : " + Message;
-		// Send to every other participant.
-		for (Participant p : mParticipants) {
-			if (p.getParticipantId().equals(mMyId))
-				continue;
-			if (p.getStatus() != Participant.STATUS_JOINED)
-				continue;
-
-			Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), ('M' + Message).getBytes(), mRoomId,
-					p.getParticipantId());
+		if(mMyTurn && Message.length() == 3) {
+			new isWordTask().execute(Message);
+		} else {
+			frag_game.changeList(mMyName + " : " + Message);
+			Message = 'M' + mMyName + " : " + Message;
+			sendData(Message);
 		}
 
-		frag_game.changeList(Message);
+		frag_game.et_message.setText("");
 	}
 
 	void sendData(String data) {
@@ -133,15 +127,23 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		String Message = new String(rtm.getMessageData()).substring(1);
 		byte flag = rtm.getMessageData()[0];
 		Log.e(TAG, Message);
-		
+
 		if(flag == 'N') {
 			for(int i=0; i<frag_game.user.length; i++) {
 				if(frag_game.user[i].getId().equals(rtm.getSenderParticipantId()))
 					frag_game.user[i].getName().setText(Message);
 			}
-		}
-		
-		else {
+			
+			startGame();
+		} else if(flag == 'I') {
+			tradeName.sendEmptyMessage(0);
+		} else if(flag == 'F') {
+			frag_game.tv_pan.setText(Message);
+		} else if(flag == 'O') {
+			mMyTurn = true;
+			frag_game.tv_pan.setText(Message);
+			frag_game.setColor(mMyTurn, mMyId);
+		} else {
 			frag_game.changeList(Message);
 		}
 	}
@@ -155,6 +157,16 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		rtmConfigBuilder.setRoomStatusUpdateListener(this);
 		rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
 		Games.RealTimeMultiplayer.create(getApiClient(), rtmConfigBuilder.build());
+	}
+
+	void startGame() {
+		if(mMyId.equals(frag_game.user[0].getId())) {
+			new getWordTask().execute();
+			mMyTurn = true;
+		}
+
+		frag_game.setColor(mMyTurn, mMyId);
+		Log.e("myTurn", "" + mMyTurn);
 	}
 
 	// Leave the room.
@@ -182,28 +194,9 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		super.onActivityResult(requestCode, responseCode, intent);
 		// we got the result from the "waiting room" UI.
 		if (responseCode == Activity.RESULT_OK) {
+			Log.e(TAG, "OnActivityResult");
 			// ready to start playing
-			util.fragmentReplace(frag_game, this, true);
-			getSupportFragmentManager().executePendingTransactions();
-
-			for (int i=0; i<mParticipants.size(); i++) 
-				frag_game.user[i].setId(mParticipants.get(i).getParticipantId()); // Set Users ID
 			
-			
-			for (int i=0; i<mParticipants.size(); i++) { 
-				// Trade Users Name
-				if (mParticipants.get(i).getParticipantId().equals(mMyId)) {
-					frag_game.user[i].getName().setText(mMyName);
-					continue;
-				}
-				if (mParticipants.get(i).getStatus() != Participant.STATUS_JOINED)
-					continue;
-				
-				
-				Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), ('N' + mMyName).getBytes(), mRoomId,
-						mParticipants.get(i).getParticipantId());
-			}
-			Log.d(TAG, "Starting game (waiting room returned OK).");
 		} else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
 			// player indicated that they want to leave the room
 			leaveRoom();
@@ -219,7 +212,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 				leaveRoom();
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -257,12 +250,13 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 	@Override
 	public void onConnectedToRoom(Room room) {
 		Log.d(TAG, "onConnectedToRoom.");
-
+		
 		// get room ID, participants and my ID:
 		mRoomId = room.getRoomId();
 		mParticipants = room.getParticipants();
 		mMyId = room.getParticipantId(Games.Players.getCurrentPlayerId(getApiClient()));
 		mMyName = room.getParticipant(mMyId).getDisplayName();
+		sendData("Init");
 
 		// print out the list of participants (for debug purposes)
 		Log.d(TAG, "Room ID: " + mRoomId);
@@ -270,6 +264,32 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		Log.d(TAG, "MY NAME " + mMyName);
 		Log.d(TAG, "<< CONNECTED TO ROOM>>");
 	}
+	
+	Handler tradeName = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			util.fragmentReplace(frag_game, MainActivity.this, true);
+			getSupportFragmentManager().executePendingTransactions();
+			for (int i=0; i<mParticipants.size(); i++) {
+				frag_game.user[i].setId(mParticipants.get(i).getParticipantId()); // Set Users ID
+				Log.e("Set Id", "" + mParticipants.get(i).getDisplayName());
+			}
+			
+			for (int i=0; i<mParticipants.size(); i++) { 
+				// Trade Users Name
+				if (mParticipants.get(i).getParticipantId().equals(mMyId)) {
+					frag_game.user[i].getName().setText(mMyName);
+					continue;
+				}
+				if (mParticipants.get(i).getStatus() != Participant.STATUS_JOINED)
+					continue;
+
+				Games.RealTimeMultiplayer.sendUnreliableMessage(getApiClient(), ('N' + mMyName).getBytes(), mRoomId,
+						mParticipants.get(i).getParticipantId());
+			}
+			
+			Log.d(TAG, "Starting game (waiting room returned OK).");
+		};
+	};
 
 	@Override
 	public void onDisconnectedFromRoom(Room arg0) {
@@ -331,7 +351,59 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 	}
 
 	@Override
+	
 	public void onRoomConnecting(Room arg0) {
 		Log.e(TAG, "onRoomConnecting");
+	}
+
+	public class getWordTask extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... arg0) {
+			return new HttpManager().GET(URLS.get_word);
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+			frag_game.tv_pan.setText(result);
+			sendData('F' + result);
+		}
+	}
+
+	public class isWordTask extends AsyncTask<String, String, Boolean> {
+		
+		String word = null;
+		
+		@Override
+		protected Boolean doInBackground(String... arg0) {
+			try {
+				word = URLEncoder.encode(arg0[0], "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return false;
+			}
+			
+			return Boolean.valueOf(new HttpManager().GET(URLS.is_kung + "?word=" + word));
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			Log.e("is_kung", ""+result);
+			try {
+				word = URLDecoder.decode(word, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			if(result) {
+				sendData('O' + word);
+				frag_game.tv_pan.setText(word);
+				mMyTurn = false;
+				frag_game.setColor(mMyTurn, mMyId);
+			}
+		}
 	}
 }

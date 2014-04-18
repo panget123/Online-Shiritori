@@ -74,7 +74,7 @@ public class HttpManager {
 			urlCon.connect();
 
 			br = new BufferedReader(new InputStreamReader(
-					urlCon.getInputStream(), "euc-kr"));
+					urlCon.getInputStream(), "utf-8"));
 			while ((line = br.readLine()) != null) {
 				sb.append(line);
 			}

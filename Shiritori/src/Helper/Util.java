@@ -1,5 +1,9 @@
 package Helper;
 
+import java.util.ArrayList;
+
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.Participant;
 import com.sunrin.shiritori.R;
 
 import android.content.Context;
@@ -31,7 +35,7 @@ public class Util {
 		transaction.replace(R.id.container, newFragment);
 		
 		// Commit the transaction
-		transaction.commit();
+		transaction.commitAllowingStateLoss();
 	}
 	
 	private Bitmap addBorder(Bitmap bmp, int borderSize, int color) {
