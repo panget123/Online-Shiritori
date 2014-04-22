@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -102,7 +103,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		if(mMyTurn && Message.length() == 3) {
 			new isWordTask().execute(Message);
 		} else {
-			frag_game.changeList(mMyName + " : " + Message);
+			//frag_game.changeList(mMyName + " : " + Message);
 			Message = 'M' + mMyName + " : " + Message;
 			sendData(Message);
 		}
@@ -136,7 +137,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 			
 			startGame();
 		} else if(flag == 'I') {
-			tradeName.sendEmptyMessage(0);
+			tradeName.sendEmptyMessageDelayed(0, 2000);
 		} else if(flag == 'F') {
 			frag_game.tv_pan.setText(Message);
 		} else if(flag == 'O') {
@@ -144,7 +145,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 			frag_game.tv_pan.setText(Message);
 			frag_game.setColor(mMyTurn, mMyId);
 		} else {
-			frag_game.changeList(Message);
+			//frag_game.changeList(Message);
 		}
 	}
 
@@ -175,6 +176,7 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		Games.RealTimeMultiplayer.leave(getApiClient(), this, mRoomId);
 		mRoomId = null;
 		getSupportFragmentManager().popBackStack();
+		util.hideSoftInput(frag_game.et_message, MainActivity.this);
 	}
 
 	void showWaitingRoom(Room room) {
@@ -256,19 +258,20 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 		mParticipants = room.getParticipants();
 		mMyId = room.getParticipantId(Games.Players.getCurrentPlayerId(getApiClient()));
 		mMyName = room.getParticipant(mMyId).getDisplayName();
-		sendData("Init");
 
 		// print out the list of participants (for debug purposes)
 		Log.d(TAG, "Room ID: " + mRoomId);
 		Log.d(TAG, "My ID " + mMyId);
 		Log.d(TAG, "MY NAME " + mMyName);
 		Log.d(TAG, "<< CONNECTED TO ROOM>>");
+		sendData("Init");
 	}
 	
 	Handler tradeName = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			util.fragmentReplace(frag_game, MainActivity.this, true);
 			getSupportFragmentManager().executePendingTransactions();
+			util.showSoftInput(frag_game.et_message, MainActivity.this);
 			for (int i=0; i<mParticipants.size(); i++) {
 				frag_game.user[i].setId(mParticipants.get(i).getParticipantId()); // Set Users ID
 				Log.e("Set Id", "" + mParticipants.get(i).getDisplayName());
@@ -405,5 +408,14 @@ RoomStatusUpdateListener, RealTimeMessageReceivedListener, RoomUpdateListener {
 				frag_game.setColor(mMyTurn, mMyId);
 			}
 		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		if(getSupportFragmentManager().findFragmentById(R.id.container).getId() == frag_game.getId())
+			leaveRoom();
+		else
+			finish();
 	}
 }

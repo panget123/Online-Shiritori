@@ -6,6 +6,7 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.sunrin.shiritori.R;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,12 +14,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 public class Util {
 	private Util() {
 	}
 
-	static Util util = new Util();
+	private static Util util = new Util();
 	public static Util getInstace() {
 		return util;
 	}
@@ -44,5 +47,17 @@ public class Util {
 		canvas.drawColor(color);
 		canvas.drawBitmap(bmp, borderSize, borderSize, null);
 		return bmpWithBorder;
+	}
+
+	public void showSoftInput(EditText et, Context c) {
+		InputMethodManager imm = (InputMethodManager)c.getSystemService(Context.INPUT_METHOD_SERVICE);
+		
+		imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+	}
+	
+	public void hideSoftInput(EditText et, Context c) {
+		InputMethodManager imm = (InputMethodManager)c.getSystemService(Context.INPUT_METHOD_SERVICE);
+		
+		imm.hideSoftInputFromWindow(et.getWindowToken(),0);
 	}
 }

@@ -2,60 +2,75 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="10dp" >
 
-    <TextView
-        android:id="@+id/word_pan"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/ll_game_stage"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="쿵쿵따"
-        android:textSize="30sp" />
+        android:layout_centerVertical="true"
+        android:orientation="horizontal" >
 
-    <RelativeLayout
-        android:id="@+id/rl_game_stage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/word_pan" >
-
-        <ImageView
-            android:id="@+id/user1"
+        <RelativeLayout
+            android:id="@+id/rl_user1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher"
-            android:background="#FFFFFF" />
+            android:background="@drawable/outline" >
 
-        <TextView
-            android:id="@+id/name1"
+            <ImageView
+                android:id="@+id/user1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:src="@drawable/ic_launcher" />
+
+            <TextView
+                android:id="@+id/name1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user1"
+                android:text="Name" />
+            
+            <TextView
+                android:id="@+id/tv_score1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name1"
+                android:text="Score" />
+            
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_user2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/user1"
-            android:text="Name" />
+            android:background="@drawable/outline" >
 
-        <ImageView
-            android:id="@+id/user2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/user1"
-            android:layout_toRightOf="@+id/user1"
-            android:src="@drawable/ic_launcher"
-            android:background="#FFFFFF"/>
+            <ImageView
+                android:id="@+id/user2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:src="@drawable/ic_launcher" />
 
-        <TextView
-            android:id="@+id/name2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/user2"
-            android:layout_below="@id/user2"
-            android:text="Name" />
-    </RelativeLayout>
-
-    <ListView
-        android:id="@+id/message"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/et_send"
-        android:layout_below="@+id/rl_game_stage" />
+            <TextView
+                android:id="@+id/name2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user2"
+                android:text="Name" />
+            
+            <TextView
+                android:id="@+id/tv_score2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name2"
+                android:text="Score" />
+            
+        </RelativeLayout>
+    </LinearLayout>
 
     <EditText
         android:id="@+id/et_send"
@@ -75,5 +90,33 @@
         android:layout_alignParentRight="true"
         android:onClick="mOnClick"
         android:text="Send" />
+
+    <LinearLayout
+        android:id="@+id/ll_game_prog"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/tv_history"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="전 단어" />
+
+        <TextView
+            android:id="@+id/word_pan"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="쿵쿵따"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="시간 : 30초" />
+    </LinearLayout>
 
 </RelativeLayout>

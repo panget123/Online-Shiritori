@@ -16,9 +16,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class GameFragment extends Fragment{
-	ArrayList<String> list;
-	ArrayAdapter<String> adapter;
-	ListView listview;
 	EditText et_message;
 	TextView tv_pan;
 	User[] user = new User[2];
@@ -32,15 +29,10 @@ public class GameFragment extends Fragment{
 				false);
 		Log.e("GameFrag", "OncreateView");
 		
-		list = new ArrayList<String>();
-		adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
-		listview = (ListView)rootView.findViewById(R.id.message);
 		et_message = (EditText)rootView.findViewById(R.id.et_send);
 		tv_pan = (TextView)rootView.findViewById(R.id.word_pan);
 		user[0] = new User(rootView, R.id.name1, R.id.user1);
 		user[1] = new User(rootView, R.id.name2, R.id.user2);
-		
-		listview.setAdapter(adapter);
 		
 		return rootView;
 	}
@@ -51,18 +43,12 @@ public class GameFragment extends Fragment{
 	
 	public void setColor(boolean mMyTurn, String mMyId) {
 		for(int i=0; i<user.length; i++) {
-			if(mMyTurn && user[i].getId().equals(mMyId))
+			if(mMyTurn && user[i].getId().equals(mMyId)) // 내 턴이면서 내 아이디면 이 위치를 붉게
 				user[i].getProfile().setBackgroundColor(Color.RED);
-			else if(!mMyTurn && !user[i].getId().equals(mMyId))
+			else if(!mMyTurn && !user[i].getId().equals(mMyId)) // 내 턴 아니고 이게 내 아이디도 아니면 이 위치를 붉게
 				user[i].getProfile().setBackgroundColor(Color.RED);
-			else
+			else // 나머진 하얗게
 				user[i].getProfile().setBackgroundColor(Color.WHITE);
 		}
-	}
-	
-	public void changeList(String Message) {
-		list.add(Message);
-		adapter.notifyDataSetChanged();
-		listview.setSelection(list.size());
 	}
 }
