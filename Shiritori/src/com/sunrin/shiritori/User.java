@@ -1,15 +1,15 @@
 package com.sunrin.shiritori;
 
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class User {
 	private String id;
 	private String name;
-	private boolean trun;
+	private boolean turn;
 	private String room_id;
-	private String creator_id;
+	private TextView tv_name;
+	private ImageView iv_profile;
 	
 	public String getId() {
 		return id;
@@ -17,11 +17,11 @@ public class User {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public boolean isTrun() {
-		return trun;
+	public boolean isTurn() {
+		return turn;
 	}
-	public void setTrun(boolean trun) {
-		this.trun = trun;
+	public void setTurn(boolean turn) {
+		this.turn = turn;
 	}
 	public String getName() {
 		return name;
@@ -35,14 +35,25 @@ public class User {
 	public void setRoom_id(String room_id) {
 		this.room_id = room_id;
 	}
-	public String getCreator_id() {
-		return creator_id;
+	public TextView getTv_name() {
+		return tv_name;
 	}
-	public void setCreator_id(String creator_id) {
-		this.creator_id = creator_id;
+	public void setTv_name(TextView tv_name) {
+		this.tv_name = tv_name;
+	}
+	public ImageView getIv_profile() {
+		return iv_profile;
+	}
+	public void setIv_profile(ImageView iv_profile) {
+		this.iv_profile = iv_profile;
 	}
 	
-	public boolean isCreator() {
-		return getName().equals(getCreator_id());
+	public void clear() {
+		setId(null);
+		setRoom_id(null);
+		setName(null);
+		setTurn(false);
+		setTv_name(null);
+		setIv_profile(null);
 	}
 }

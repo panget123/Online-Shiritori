@@ -22,6 +22,7 @@ public class StatusUpdateListener implements RoomUpdateListener, RoomStatusUpdat
 	@Override
 	public void onDisconnectedFromRoom(Room arg0) {
 		Log.e(TAG, "onDisconnectedFromRoom");
+		main.leaveRoom();
 	}
 
 	@Override
@@ -63,8 +64,23 @@ public class StatusUpdateListener implements RoomUpdateListener, RoomStatusUpdat
 
 	@Override
 	
-	public void onRoomConnecting(Room arg0) {
+	public void onRoomConnecting(Room room) {
 		Log.e(TAG, "onRoomConnecting");
+		
+		if(room == null)
+			return;
+		
+		// get room ID, participants and my ID:
+		main.user.setRoom_id(room.getRoomId());
+		main.mParticipants = room.getParticipants();
+		main.user.setId(room.getParticipantId(Games.Players.getCurrentPlayerId(main.getApiClient())));
+		main.user.setName(room.getParticipant(main.user.getId()).getDisplayName());
+
+		// print out the list of participants (for debug purposes)
+		Log.d(TAG, "Room ID: " + main.user.getRoom_id());
+		Log.d(TAG, "My ID " + main.user.getId());
+		Log.d(TAG, "MY NAME " + main.user.getName());
+		Log.d(TAG, "<< CONNECTED TO ROOM>>");
 	}
 
 	@Override
@@ -75,6 +91,7 @@ public class StatusUpdateListener implements RoomUpdateListener, RoomStatusUpdat
 	@Override
 	public void onLeftRoom(int arg0, String arg1) {
 		Log.e(TAG, "onLeftRoom");
+		main.leaveRoom();
 	}
 
 	@Override
@@ -85,6 +102,9 @@ public class StatusUpdateListener implements RoomUpdateListener, RoomStatusUpdat
 	@Override
 	public void onRoomCreated(int arg0, Room room) {
 		Log.e(TAG, "onRoomCreated");
+		if(room == null)
+			return;
+		
 		main.showWaitingRoom(room);
 	}
 
@@ -92,22 +112,6 @@ public class StatusUpdateListener implements RoomUpdateListener, RoomStatusUpdat
 	public void onConnectedToRoom(Room room) {
 		Log.d(TAG, "onConnectedToRoom.");
 		
-		if(room == null)
-			return;
-		
-		// get room ID, participants and my ID:
-		main.user.setRoom_id(room.getRoomId());
-		main.mParticipants = room.getParticipants();
-		main.user.setId(room.getParticipantId(Games.Players.getCurrentPlayerId(main.getApiClient())));
-		main.user.setName(room.getParticipant(main.user.getId()).getDisplayName());
-		main.user.setCreator_id(room.getCreatorId());
-
-		// print out the list of participants (for debug purposes)
-		Log.d(TAG, "Room ID: " + main.user.getRoom_id());
-		Log.d(TAG, "My ID " + main.user.getId());
-		Log.d(TAG, "MY NAME " + main.user.getName());
-		Log.d(TAG, "I'm Creator : " + room.getCreatorId().equals(main.user.getId()));
-		Log.d(TAG, "<< CONNECTED TO ROOM>>");
+		main.GameInitializing.sendEmptyMessage(0);
 	}
-
 }

@@ -1,25 +1,33 @@
 package com.sunrin.shiritori;
 
-import java.util.ArrayList;
-
-import android.content.Context;
-import android.graphics.Color;
+import Helper.Util;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class GameFragment extends Fragment{
 	EditText et_message;
 	TextView tv_pan;
-	User[] user = new User[2];
-
-	public GameFragment() {}
+	public User enemy, player;
+	Util util;
+	
+	public GameFragment() {
+		enemy  = new User();
+		util = Util.getInstace();
+	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		player = ((MainActivity)getActivity()).user;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,10 +36,29 @@ public class GameFragment extends Fragment{
 				false);
 		Log.e("GameFrag", "OncreateView");
 		
+		
+		if(player.isTurn()) {
+			player.setTv_name((TextView)rootView.findViewById(R.id.name1));
+			player.setIv_profile((ImageView)rootView.findViewById(R.id.user1));
+			enemy.setTv_name((TextView)rootView.findViewById(R.id.name2));
+			enemy.setIv_profile((ImageView)rootView.findViewById(R.id.user2));
+		} else {
+			player.setTv_name((TextView)rootView.findViewById(R.id.name2));
+			player.setIv_profile((ImageView)rootView.findViewById(R.id.user2));
+			enemy.setTv_name((TextView)rootView.findViewById(R.id.name1));
+			enemy.setIv_profile((ImageView)rootView.findViewById(R.id.user1));
+		}
+		
 		et_message = (EditText)rootView.findViewById(R.id.et_send);
 		tv_pan = (TextView)rootView.findViewById(R.id.word_pan);
 		
 		return rootView;
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		util.showSoftInput(et_message, getActivity());
 	}
 	
 //	public void setName(int index, String name) {
