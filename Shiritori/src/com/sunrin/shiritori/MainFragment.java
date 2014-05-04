@@ -18,12 +18,12 @@ public class MainFragment extends Fragment implements OnClickListener{
 		View rootView = inflater.inflate(R.layout.fragment_main, container,
 				false);
 		
-		Button btn_quick = (Button)rootView.findViewById(R.id.btn_quick_match);
-		btn_quick.setOnClickListener(this);
+		Button btn_quick_match = (Button)rootView.findViewById(R.id.btn_quick_match);
+		btn_quick_match.setOnClickListener(this);
 		
 		return rootView;
 	}
-
+	
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()) {

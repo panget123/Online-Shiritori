@@ -4,35 +4,25 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
-
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesActivityResultCodes;
-import com.google.android.gms.games.multiplayer.Participant;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
-import com.google.android.gms.games.multiplayer.realtime.Room;
-import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
-import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
-import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
-import com.google.example.games.basegameutils.BaseGameActivity;
 
 import Helper.HttpManager;
 import Helper.MessageReceivedListener;
 import Helper.StatusUpdateListener;
 import Helper.URLS;
 import Helper.Util;
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.Participant;
+import com.google.android.gms.games.multiplayer.realtime.Room;
+import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 public class MainActivity extends BaseGameActivity {
 
@@ -62,14 +52,14 @@ public class MainActivity extends BaseGameActivity {
 	}
 	
 	public void initializing() {
+		user = new User();
+		
 		frag_main 	= new MainFragment();
 		frag_splash = new SplashFragment();
 		frag_game 	= new GameFragment();
 		
-		user = new User();
-		
-		mMsgReceivedListener = new MessageReceivedListener(this);
 		mStatusUpdateListener = new StatusUpdateListener(this);
+		mMsgReceivedListener = new MessageReceivedListener(this);
 	}
 
 	@Override
@@ -152,12 +142,6 @@ public class MainActivity extends BaseGameActivity {
 					boolean turn = (i == 0) ? true : false;
 					user.setTurn(turn);
 					frag_game.enemy.setTurn(!turn);
-				} 
-				
-				else 
-				{
-					frag_game.enemy.setId(mParticipants.get(i).getParticipantId());
-					frag_game.enemy.setRoom_id(user.getRoom_id());
 				}
 			}
 
@@ -166,57 +150,6 @@ public class MainActivity extends BaseGameActivity {
 			sendData("I" + user.getName());
 		};
 	};
-
-//	public class getWordTask extends AsyncTask<String, String, String> {
-//
-//		@Override
-//		protected String doInBackground(String... arg0) {
-//			return new HttpManager().GET(URLS.get_word);
-//		}
-//
-//		@Override
-//		protected void onPostExecute(String result) {
-//			super.onPostExecute(result);
-//			frag_game.tv_pan.setText(result);
-//			sendData('F' + result);
-//		}
-//	}
-//
-//	public class isWordTask extends AsyncTask<String, String, Boolean> {
-//		
-//		String word = null;
-//		
-//		@Override
-//		protected Boolean doInBackground(String... arg0) {
-//			try {
-//				word = URLEncoder.encode(arg0[0], "utf-8");
-//			} catch (UnsupportedEncodingException e) {
-//				e.printStackTrace();
-//				return false;
-//			}
-//			
-//			return Boolean.valueOf(new HttpManager().GET(URLS.is_kung + "?word=" + word));
-//		}
-//
-//		@Override
-//		protected void onPostExecute(Boolean result) {
-//			super.onPostExecute(result);
-//			Log.e("is_kung", ""+result);
-//			try {
-//				word = URLDecoder.decode(word, "utf-8");
-//			} catch (UnsupportedEncodingException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//				return;
-//			}
-//			if(result) {
-//				sendData('O' + word);
-//				frag_game.tv_pan.setText(word);
-//				mMyTurn = false;
-//				frag_game.setColor(mMyTurn, mMyId);
-//			}
-//		}
-//	}
 	
 	@Override
 	public void onBackPressed() {

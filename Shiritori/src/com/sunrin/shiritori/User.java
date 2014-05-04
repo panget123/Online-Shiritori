@@ -4,31 +4,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class User {
-	private String id;
 	private String name;
+	private String id;
 	private boolean turn;
 	private String room_id;
 	private TextView tv_name;
 	private ImageView iv_profile;
 	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
 	public boolean isTurn() {
 		return turn;
 	}
 	public void setTurn(boolean turn) {
 		this.turn = turn;
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+	
 	public String getRoom_id() {
 		return room_id;
 	}
@@ -49,11 +38,23 @@ public class User {
 	}
 	
 	public void clear() {
+		setName(null);
 		setId(null);
 		setRoom_id(null);
-		setName(null);
 		setTurn(false);
 		setTv_name(null);
 		setIv_profile(null);
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }

@@ -101,9 +101,9 @@ public class StatusUpdateListener implements RoomUpdateListener, RoomStatusUpdat
 
 	@Override
 	public void onRoomCreated(int arg0, Room room) {
-		Log.e(TAG, "onRoomCreated");
 		if(room == null)
 			return;
+		Log.e(TAG, "onRoomCreated");
 		
 		main.showWaitingRoom(room);
 	}

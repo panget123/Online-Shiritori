@@ -1,23 +1,32 @@
 package Helper;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.multiplayer.Participant;
-import com.sunrin.shiritori.R;
-
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+
+import com.google.android.gms.common.images.ImageManager;
+import com.google.android.gms.games.multiplayer.Participant;
+import com.sunrin.shiritori.R;
 
 public class Util {
 	private Util() {
@@ -42,13 +51,30 @@ public class Util {
 		// Commit the transaction
 		transaction.commitAllowingStateLoss();
 	}
+	
+	public void setImageFromParticipant(Context c, Participant p, ImageView iv) {
+		ImageManager im = ImageManager.create(c);    
+		im.loadImage(iv, p.getIconImageUri(), R.drawable.ic_launcher);
+		try{
+			Bitmap bitmap = ((BitmapDrawable)iv.getDrawable()).getBitmap();
+			bitmap = addBorder(bitmap, 10);
+			iv.setBackground(new BitmapDrawable(c.getResources(), bitmap));
+		}
+		catch(NullPointerException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-	private Bitmap addBorder(Bitmap bmp, int borderSize, int color) {
+	private Bitmap addBorder(Bitmap bmp, int borderSize) {
 		Bitmap bmpWithBorder = Bitmap.createBitmap(bmp.getWidth() + borderSize * 2, bmp.getHeight() + borderSize * 2, bmp.getConfig());
 		Canvas canvas = new Canvas(bmpWithBorder);
-		canvas.drawColor(color);
 		canvas.drawBitmap(bmp, borderSize, borderSize, null);
 		return bmpWithBorder;
+	}
+	
+	public void removeElement(byte[] bs, int del) {
+	    System.arraycopy(bs,del+1,bs,del,bs.length-1-del);
 	}
 
 	public void AlphabeticallySort(ArrayList<Participant> list) {

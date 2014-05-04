@@ -15,58 +15,69 @@
 
         <RelativeLayout
             android:id="@+id/rl_user1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5" >
 
             <ImageView
                 android:id="@+id/user1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:src="@drawable/ic_launcher" />
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/ic_launcher" />
 
             <TextView
                 android:id="@+id/name1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/user1"
+                android:textSize="20sp"
+                android:layout_centerHorizontal="true"
                 android:text="Name" />
-            
+
             <TextView
                 android:id="@+id/tv_score1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/name1"
+                android:textSize="15sp"
+                android:layout_centerHorizontal="true"
                 android:text="Score" />
-            
-        </RelativeLayout>
 
+        </RelativeLayout>
+        
         <RelativeLayout
             android:id="@+id/rl_user2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5" >
 
             <ImageView
                 android:id="@+id/user2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:src="@drawable/ic_launcher" />
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/ic_launcher" />
 
             <TextView
                 android:id="@+id/name2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/user2"
+                android:layout_below="@+id/user2"
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"
                 android:text="Name" />
-            
+
             <TextView
                 android:id="@+id/tv_score2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/name2"
+                android:layout_centerHorizontal="true"
+                android:textSize="15sp"
                 android:text="Score" />
-            
         </RelativeLayout>
     </LinearLayout>
 
@@ -86,7 +97,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:onClick="mOnClick"
         android:text="Send" />
 
     <LinearLayout
