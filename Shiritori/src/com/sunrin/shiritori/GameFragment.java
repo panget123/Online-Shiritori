@@ -10,6 +10,8 @@ import Helper.Util;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,10 +25,12 @@ import android.widget.TextView;
 
 public class GameFragment extends Fragment implements OnClickListener {
 	EditText et_message;
-	public TextView tv_pan;
+	public TextView tv_pan, tv_time;
 	public User enemy, player;
 	MainActivity main = null;
 	Util util;
+	int time;
+	public CountDownTimer mCountDown = null;
 
 	public GameFragment() {
 		enemy  = new User();
@@ -62,6 +66,7 @@ public class GameFragment extends Fragment implements OnClickListener {
 		
 		et_message = (EditText)rootView.findViewById(R.id.et_send);
 		tv_pan = (TextView)rootView.findViewById(R.id.word_pan);
+		tv_time = (TextView)rootView.findViewById(R.id.tv_time);
 		
 		Button btn_send = (Button)rootView.findViewById(R.id.btn_send);
 		btn_send.setOnClickListener(this);
@@ -72,6 +77,26 @@ public class GameFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		time = 20;
+		
+		mCountDown = new CountDownTimer(time * 1000, 1 * 1000) {
+			
+			@Override
+			public void onTick(long time) {
+				tv_time.setText("남은시간 : " + (time / 1000));
+			}
+			
+			@Override
+			public void onFinish() {
+				mCountDown.start();
+				
+				if(player.isTurn()) 
+					new getWordTask().execute();
+				
+			}
+		};
+		
+		mCountDown.start();
 
 		if(player.isTurn())
 			new getWordTask().execute();
@@ -136,6 +161,8 @@ public class GameFragment extends Fragment implements OnClickListener {
 				tv_pan.setText(word);
 				player.setTurn(false);
 				enemy.setTurn(true);
+				mCountDown.cancel();
+				mCountDown.start();
 			}
 		}
 	}

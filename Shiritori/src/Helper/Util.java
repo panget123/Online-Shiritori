@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,7 +52,7 @@ public class Util {
 		// Commit the transaction
 		transaction.commitAllowingStateLoss();
 	}
-	
+
 	public void setImageFromParticipant(Context c, Participant p, ImageView iv) {
 		ImageManager im = ImageManager.create(c);    
 		im.loadImage(iv, p.getIconImageUri(), R.drawable.ic_launcher);
@@ -72,9 +73,9 @@ public class Util {
 		canvas.drawBitmap(bmp, borderSize, borderSize, null);
 		return bmpWithBorder;
 	}
-	
+
 	public void removeElement(byte[] bs, int del) {
-	    System.arraycopy(bs,del+1,bs,del,bs.length-1-del);
+		System.arraycopy(bs,del+1,bs,del,bs.length-1-del);
 	}
 
 	public void AlphabeticallySort(ArrayList<Participant> list) {

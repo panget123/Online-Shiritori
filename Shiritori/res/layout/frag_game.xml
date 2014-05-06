@@ -124,7 +124,7 @@
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:text="시간 : 30초" />
+            android:text="시간 : 20초" />
     </LinearLayout>
 
 </RelativeLayout>
