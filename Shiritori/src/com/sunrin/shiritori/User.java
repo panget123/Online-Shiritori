@@ -8,8 +8,9 @@ public class User {
 	private String id;
 	private boolean turn;
 	private String room_id;
-	private TextView tv_name;
+	private TextView tv_name, tv_score;
 	private ImageView iv_profile;
+	private int score;
 	
 	public boolean isTurn() {
 		return turn;
@@ -56,5 +57,17 @@ public class User {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public TextView getTv_score() {
+		return tv_score;
+	}
+	public void setTv_score(TextView tv_score) {
+		this.tv_score = tv_score;
 	}
 }

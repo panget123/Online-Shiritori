@@ -60,6 +60,8 @@ public class MessageReceivedListener implements RealTimeMessageReceivedListener 
 			frag_game.tv_pan.setText(message);
 			player.setTurn(true);
 			enemy.setTurn(false);
+			enemy.setScore(enemy.getScore() + GameFragment.SCORE);
+			enemy.getTv_score().setText("" + enemy.getScore());
 			frag_game.mCountDown.cancel();
 			frag_game. mCountDown.start();
 			break;

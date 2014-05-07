@@ -43,7 +43,7 @@
                 android:layout_below="@id/name1"
                 android:textSize="15sp"
                 android:layout_centerHorizontal="true"
-                android:text="Score" />
+                android:text="0" />
 
         </RelativeLayout>
         
@@ -77,7 +77,7 @@
                 android:layout_below="@id/name2"
                 android:layout_centerHorizontal="true"
                 android:textSize="15sp"
-                android:text="Score" />
+                android:text="0" />
         </RelativeLayout>
     </LinearLayout>
 

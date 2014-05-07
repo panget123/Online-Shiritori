@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +29,7 @@ public class GameFragment extends Fragment implements OnClickListener {
 	MainActivity main = null;
 	Util util;
 	int time;
+	public final static int SCORE = 20;
 	public CountDownTimer mCountDown = null;
 
 	public GameFragment() {
@@ -55,13 +55,17 @@ public class GameFragment extends Fragment implements OnClickListener {
 		if(player.isTurn()) {
 			player.setTv_name((TextView)rootView.findViewById(R.id.name1));
 			player.setIv_profile((ImageView)rootView.findViewById(R.id.user1));
+			player.setTv_score((TextView)rootView.findViewById(R.id.tv_score1));
 			enemy.setTv_name((TextView)rootView.findViewById(R.id.name2));
 			enemy.setIv_profile((ImageView)rootView.findViewById(R.id.user2));
+			enemy.setTv_score((TextView)rootView.findViewById(R.id.tv_score2));
 		} else {
 			player.setTv_name((TextView)rootView.findViewById(R.id.name2));
 			player.setIv_profile((ImageView)rootView.findViewById(R.id.user2));
+			player.setTv_score((TextView)rootView.findViewById(R.id.tv_score2));
 			enemy.setTv_name((TextView)rootView.findViewById(R.id.name1));
 			enemy.setIv_profile((ImageView)rootView.findViewById(R.id.user1));
+			enemy.setTv_score((TextView)rootView.findViewById(R.id.tv_score1));
 		}
 		
 		et_message = (EditText)rootView.findViewById(R.id.et_send);
@@ -83,7 +87,7 @@ public class GameFragment extends Fragment implements OnClickListener {
 			
 			@Override
 			public void onTick(long time) {
-				tv_time.setText("남은시간 : " + (time / 1000));
+				tv_time.setText("남은시간 : " + (time / 1000) + "초");
 			}
 			
 			@Override
@@ -160,6 +164,8 @@ public class GameFragment extends Fragment implements OnClickListener {
 				main.sendData('O' + word);
 				tv_pan.setText(word);
 				player.setTurn(false);
+				player.setScore(player.getScore() + SCORE);
+				player.getTv_score().setText("" + player.getScore());
 				enemy.setTurn(true);
 				mCountDown.cancel();
 				mCountDown.start();

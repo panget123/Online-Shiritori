@@ -108,6 +108,7 @@ public class MainActivity extends BaseGameActivity {
 		Games.RealTimeMultiplayer.leave(getApiClient(), mStatusUpdateListener, user.getRoom_id());
 		user.clear();
 		frag_game.enemy.clear();
+		frag_game.mCountDown.cancel();
 		getSupportFragmentManager().popBackStack();
 		util.hideSoftInput(frag_game.et_message, MainActivity.this);
 	}
