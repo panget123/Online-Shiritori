@@ -8,6 +8,7 @@ import Helper.HttpManager;
 import Helper.URLS;
 import Helper.Util;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -28,7 +29,7 @@ public class GameFragment extends Fragment implements OnClickListener {
 	public User enemy, player;
 	MainActivity main = null;
 	Util util;
-	int time;
+	public int time;
 	public final static int SCORE = 20;
 	public CountDownTimer mCountDown = null;
 
@@ -67,13 +68,15 @@ public class GameFragment extends Fragment implements OnClickListener {
 			enemy.setIv_profile((ImageView)rootView.findViewById(R.id.user1));
 			enemy.setTv_score((TextView)rootView.findViewById(R.id.tv_score1));
 		}
-		
+
 		et_message = (EditText)rootView.findViewById(R.id.et_send);
 		tv_pan = (TextView)rootView.findViewById(R.id.word_pan);
 		tv_time = (TextView)rootView.findViewById(R.id.tv_time);
-		
+
 		Button btn_send = (Button)rootView.findViewById(R.id.btn_send);
 		btn_send.setOnClickListener(this);
+		
+		setColor();
 
 		return rootView;
 	}
@@ -82,24 +85,28 @@ public class GameFragment extends Fragment implements OnClickListener {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		time = 20;
-		
+
 		mCountDown = new CountDownTimer(time * 1000, 1 * 1000) {
-			
+
 			@Override
-			public void onTick(long time) {
-				tv_time.setText("남은시간 : " + (time / 1000) + "초");
+			public void onTick(long timer) {
+				tv_time.setText("남은시간 : " + (int) (timer / 1000) + "초");
+				time = (int) (timer / 1000);
 			}
-			
+
 			@Override
 			public void onFinish() {
 				mCountDown.start();
-				
-				if(player.isTurn()) 
+
+				if(player.isTurn()) {
+					player.setScore(player.getScore() - SCORE);
 					new getWordTask().execute();
-				
+				} else {
+					enemy.setScore(enemy.getScore() - SCORE);
+				}
 			}
 		};
-		
+
 		mCountDown.start();
 
 		if(player.isTurn())
@@ -114,7 +121,7 @@ public class GameFragment extends Fragment implements OnClickListener {
 			et_message.setText("");
 			if(player.isTurn() && text.length() == 3)
 				new isWordTask().execute(text);
-				break;
+			break;
 		}
 	}
 
@@ -159,32 +166,29 @@ public class GameFragment extends Fragment implements OnClickListener {
 				e.printStackTrace();
 				return;
 			}
-			
+
 			if(result) {
 				main.sendData('O' + word);
 				tv_pan.setText(word);
 				player.setTurn(false);
-				player.setScore(player.getScore() + SCORE);
-				player.getTv_score().setText("" + player.getScore());
+				player.setScore(player.getScore() + time);
 				enemy.setTurn(true);
+				setColor();
 				mCountDown.cancel();
 				mCountDown.start();
 			}
 		}
 	}
 
-	//	public void setName(int index, String name) {
-	//		user[index].getName().setText(name);
-	//	}
-	//	
-	//	public void setColor(boolean mMyTurn, String mMyId) {
-	//		for(int i=0; i<user.length; i++) {
-	//			if(mMyTurn && user[i].getId().equals(mMyId)) // 내 턴이면서 내 아이디면 이 위치를 붉게
-	//				user[i].getProfile().setBackgroundColor(Color.RED);
-	//			else if(!mMyTurn && !user[i].getId().equals(mMyId)) // 내 턴 아니고 이게 내 아이디도 아니면 이 위치를 붉게
-	//				user[i].getProfile().setBackgroundColor(Color.RED);
-	//			else // 나머진 하얗게
-	//				user[i].getProfile().setBackgroundColor(Color.WHITE);
-	//		}
-	//	}
+	public void setColor() {
+		if(player.isTurn())
+			player.getTv_name().setBackgroundColor(Color.RED);
+		else
+			player.getTv_name().setBackgroundColor(Color.WHITE);
+
+		if(enemy.isTurn())
+			enemy.getTv_name().setBackgroundColor(Color.RED);
+		else
+			enemy.getTv_name().setBackgroundColor(Color.WHITE);
+	}
 }

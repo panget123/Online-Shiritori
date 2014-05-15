@@ -62,7 +62,12 @@ public class User {
 		return score;
 	}
 	public void setScore(int score) {
-		this.score = score;
+		if(score >= 0)
+			this.score = score;
+		else
+			this.score = 0;
+		
+		tv_score.setText("" + getScore());
 	}
 	public TextView getTv_score() {
 		return tv_score;

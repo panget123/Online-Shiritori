@@ -1,8 +1,5 @@
 package com.sunrin.shiritori;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import Helper.HttpManager;
